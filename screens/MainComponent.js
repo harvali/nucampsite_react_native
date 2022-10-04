@@ -58,7 +58,6 @@ const AboutNavigator = () => {
             <Stack.Screen
                 name='About'
                 component={AboutScreen}
-            // options={{ title: 'About' }}
             />
         </Stack.Navigator>
     );
