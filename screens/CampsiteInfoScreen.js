@@ -1,21 +1,21 @@
-import { FlatList, StyleSheet, Text, View, Button, Modal } from 'react-native';
+import { useState } from 'react';
+import { Button, FlatList, Modal, StyleSheet, Text, View } from 'react-native';
+import { Input, Rating } from 'react-native-elements';
 import { useSelector, useDispatch } from 'react-redux';
 import RenderCampsite from '../features/campsites/RenderCampsite';
-import { toggleFavorite } from '../features/favorites/favoritesSlice'
-import { useState } from 'react';
-import { Rating, Input } from 'react-native-elements';
+import { toggleFavorite } from '../features/favorites/favoritesSlice';
 import { postComment } from '../features/comments/commentsSlice';
+import * as Animatable from 'react-native-animatable';
 
 const CampsiteInfoScreen = ({ route }) => {
+    const { campsite } = route.params;
     const comments = useSelector((state) => state.comments);
     const favorites = useSelector((state) => state.favorites);
     const [showModal, setShowModal] = useState(false);
     const [rating, setRating] = useState(5);
     const [author, setAuthor] = useState('');
     const [text, setText] = useState('');
-
     const dispatch = useDispatch();
-    const { campsite } = route.params;
 
     const handleSubmit = () => {
         const newComment = {
@@ -32,17 +32,17 @@ const CampsiteInfoScreen = ({ route }) => {
         setRating(5);
         setAuthor('');
         setText('');
-    }
+    };
 
     const renderCommentItem = ({ item }) => {
         return (
             <View style={styles.commentItem}>
                 <Text style={{ fontSize: 14 }}>{item.text}</Text>
                 <Rating
-                    style={{ fontSize: 12, alignItems: 'flex-start', paddingVertical: '5%' }}
-                    readonly
-                    startingValue={rating}
+                    startingValue={item.rating}
                     imageSize={10}
+                    readonly
+                    style={{ alignItems: 'flex-start', paddingVertical: '5%' }}
                 />
                 <Text style={{ fontSize: 12 }}>
                     {`-- ${item.author}, ${item.date}`}
@@ -52,7 +52,7 @@ const CampsiteInfoScreen = ({ route }) => {
     };
 
     return (
-        <>
+        <Animatable.View animation='fadeInUp' duration={2000} delay={1000}>
             <FlatList
                 data={comments.commentsArray.filter(
                     (comment) => comment.campsiteId === campsite.id
@@ -66,10 +66,12 @@ const CampsiteInfoScreen = ({ route }) => {
                 ListHeaderComponent={
                     <>
                         <RenderCampsite
-                            onShowModal={() => setShowModal(!showModal)}
                             campsite={campsite}
                             isFavorite={favorites.includes(campsite.id)}
-                            markFavorite={() => dispatch(toggleFavorite(campsite.id))}
+                            markFavorite={() =>
+                                dispatch(toggleFavorite(campsite.id))
+                            }
+                            onShowModal={() => setShowModal(!showModal)}
                         />
                         <Text style={styles.commentsTitle}>Comments</Text>
                     </>
@@ -79,7 +81,7 @@ const CampsiteInfoScreen = ({ route }) => {
                 animationType='slide'
                 transparent={false}
                 visible={showModal}
-                onRequestClose={!showModal}
+                onRequestClose={() => setShowModal(!showModal)}
             >
                 <View style={styles.modal}>
                     <Rating
@@ -91,48 +93,41 @@ const CampsiteInfoScreen = ({ route }) => {
                     />
                     <Input
                         placeholder='Author'
-                        leftIcon={{
-                            type: 'font-awesome',
-                            name: 'user-o'
-                        }}
+                        leftIcon={{ type: 'font-awesome', name: 'user-o' }}
                         leftIconContainerStyle={{ paddingRight: 10 }}
                         onChangeText={(author) => setAuthor(author)}
                         value={author}
                     />
                     <Input
-                        placeholder='Your Comments'
-                        leftIcon={{
-                            type: 'font-awesome',
-                            name: 'comment-o'
-                        }}
+                        placeholder='Comment'
+                        leftIcon={{ type: 'font-awesome', name: 'comment-o' }}
                         leftIconContainerStyle={{ paddingRight: 10 }}
                         onChangeText={(text) => setText(text)}
                         value={text}
                     />
                     <View style={{ margin: 10 }}>
                         <Button
-                            title='Submit'
-                            style={{ color: '#5637DD' }}
                             onPress={() => {
-                                handleSubmit()
-                                resetForm()
+                                handleSubmit();
+                                resetForm();
                             }}
+                            color='#5637DD'
+                            title='Submit'
                         />
                     </View>
-
                     <View style={{ margin: 10 }}>
                         <Button
                             onPress={() => {
                                 setShowModal(!showModal);
                                 resetForm();
                             }}
-                            style={{ color: '#808080' }}
+                            color='#808080'
                             title='Cancel'
                         />
                     </View>
                 </View>
             </Modal>
-        </>
+        </Animatable.View>
     );
 };
 
