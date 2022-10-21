@@ -27,9 +27,7 @@ const ReservationScreen = () => {
     const handleReservation = () => {
         Alert.alert(
             'Begin Search ?',
-            'Number of Campers: ' + campers +
-            '\nHike-In ? ' + hikeIn +
-            '\nDate: ' + date.toLocaleDateString('en-US'),
+            `Number of Campers: ${campers} \nHike-In ? ${hikeIn} \nDate: ${date.toLocaleDateString('en-US')}`,
             [
                 {
                     text: 'Cancel',
@@ -38,7 +36,7 @@ const ReservationScreen = () => {
                 {
                     text: 'OK',
                     onPress: () =>
-                        // functionality will be added next week
+                        //todo Add functionality
                         console.log('Ok Pressed')
                 }
             ],
